@@ -85,4 +85,26 @@ export class VisiteurController {
             });
         }
     };
+
+    /**
+     * POST /api/visiteurs/:visiteurId/praticiens/:praticienId - Ajoute un praticien au portefeuille
+     */
+    public addPraticienToPortefeuille = async (req: Request, res: Response): Promise<void> => {
+        const { visiteurId, praticienId } = req.params;
+
+        try {
+            const visiteur = await this.visiteurService.addPraticienToVisiteur(visiteurId, praticienId);
+
+            res.status(200).json({
+                success: true,
+                message: 'Praticien ajouté au portefeuille',
+                data: visiteur
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                success: false,
+                message: error.message || "Erreur lors de l'ajout du praticien"
+            });
+        }
+    };
 }

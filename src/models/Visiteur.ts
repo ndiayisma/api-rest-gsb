@@ -33,7 +33,16 @@ const visiteurSchema = new Schema<IVisiteurDocument>(
       type: String,
       required: [false, 'Le numéro est facultative']
     },
-     dateEmbauche: {
+    praticiens: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Praticien'
+        }
+      ],
+      default: []
+    },
+    dateEmbauche: {
       type: Date,
       default: Date.now
     }

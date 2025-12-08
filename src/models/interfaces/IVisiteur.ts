@@ -7,6 +7,7 @@ export interface IVisiteur {
   prenom: string;
   email: string;
   tel : string;
+  praticiens?: string[];
   dateEmbauche?: Date;
 }
 
@@ -16,5 +17,6 @@ export interface ICreateVisiteur{
     prenom: string;
     email: string;
     tel : string;
+    praticiens?: string[];
     dateEmbauche?: Date;
 }

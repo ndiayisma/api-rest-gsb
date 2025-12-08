@@ -23,6 +23,8 @@ export class VisiteurRoutes {
     this.router.get('/', this.visiteurController.getAllVisiteurs);
     // GET /api/visiteurs/:id - Récupérer un visiteur par ID
     this.router.get('/:id', this.visiteurController.getVisiteurById);
+    // POST /api/visiteurs/:visiteurId/praticiens/:praticienId - Ajouter un praticien au portefeuille
+    this.router.post('/:visiteurId/praticiens/:praticienId', this.visiteurController.addPraticienToPortefeuille);
       // DELETE /api/visiteurs/:id - Supprimer un visiteur par ID
       this.router.delete('/:id', this.visiteurController.deleteVisiteur);
   }

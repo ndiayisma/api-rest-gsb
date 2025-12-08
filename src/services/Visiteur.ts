@@ -1,5 +1,7 @@
 import { VisiteurModel, IVisiteurDocument } from '../models/Visiteur';
+import { PraticienModel } from '../models/Praticien';
 import { ICreateVisiteur } from '../models/interfaces/IVisiteur';
+import { Types } from 'mongoose';
 /**
  * Service pour gérer la logique métier des utilisateurs
  */
@@ -79,6 +81,61 @@ export class VisiteurService {
         throw new Error(`ID invalide: ${id}`);
       }
       throw error;
+    }
+  }
+
+  /**
+   * Ajoute un praticien au portefeuille d'un visiteur
+   */
+  public async addPraticienToVisiteur(visiteurId: string, praticienId: string): Promise<IVisiteurDocument> {
+    try {
+      if (!Types.ObjectId.isValid(visiteurId) || !Types.ObjectId.isValid(praticienId)) {
+        throw new Error('Identifiant invalide fourni');
+      }
+
+      const praticien = await PraticienModel.findById(praticienId).exec();
+      if (!praticien) {
+        throw new Error(`Praticien avec l'ID ${praticienId} introuvable`);
+      }
+
+      const visiteur = await VisiteurModel.findById(visiteurId).exec();
+      if (!visiteur) {
+        throw new Error(`Visiteur avec l'ID ${visiteurId} introuvable`);
+      }
+
+      const alreadyInPortfolio = (visiteur.praticiens || []).some((id) => id.toString() === praticienId);
+      if (alreadyInPortfolio) {
+        return visiteur;
+      }
+
+      visiteur.praticiens?.push(praticienId as any);
+      await visiteur.save();
+      return visiteur;
+    } catch (error: any) {
+      throw new Error(error.message || "Erreur lors de l'ajout du praticien au portefeuille");
+    }
+  }
+
+  /**
+   * Récupère les praticiens du portefeuille d'un visiteur
+   */
+  public async getPraticiensPortefeuille(visiteurId: string): Promise<any[]> {
+    try {
+      if (!Types.ObjectId.isValid(visiteurId)) {
+        throw new Error('Identifiant invalide fourni');
+      }
+
+      const visiteur = await VisiteurModel.findById(visiteurId)
+        .populate('praticiens')
+        .exec();
+
+      if (!visiteur) {
+        throw new Error(`Visiteur avec l'ID ${visiteurId} introuvable`);
+      }
+
+      return visiteur.praticiens || [];
+    } catch (error: any) {
+      throw new Error(error.message || 'Erreur lors de la récupération du portefeuille');
     }
   }
 }
