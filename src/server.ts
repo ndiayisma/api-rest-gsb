@@ -4,7 +4,10 @@ import dotenv from 'dotenv';
 import { Database } from './config/database';
 import { UserRoutes } from './routes/User';
 import { VisiteurRoutes } from './routes/Visiteur';
-
+import { VisiteRoutes } from "./routes/Visite";
+import { PraticienRoutes } from './routes/Praticien';
+import { MotifRoutes } from './routes/Motif';
+import mongoose from 'mongoose';
 
 // Chargement des variables d'environnement
 dotenv.config();
@@ -75,6 +78,15 @@ class App {
     // Routes visiteurs
     const visiteurRoutes = new VisiteurRoutes();
     this.app.use('/api/visiteurs', visiteurRoutes.router);
+    // Routes visites
+    const visiteRoutes = new VisiteRoutes();
+    this.app.use('/api/visites', visiteRoutes.router);
+    // Routes praticiens
+    const praticienRoutes = new PraticienRoutes();
+    this.app.use('/api/praticiens', praticienRoutes.router);
+    // Routes motifs
+    const motifRoutes = new MotifRoutes();
+    this.app.use('/api/motifs', motifRoutes.router);
   }
 
 
