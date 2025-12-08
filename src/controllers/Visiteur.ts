@@ -87,10 +87,11 @@ export class VisiteurController {
     };
 
     /**
-     * POST /api/visiteurs/:visiteurId/praticiens/:praticienId - Ajoute un praticien au portefeuille
+     * POST /api/visiteurs/:visiteurId/praticiens - Ajoute un praticien au portefeuille
      */
     public addPraticienToPortefeuille = async (req: Request, res: Response): Promise<void> => {
-        const { visiteurId, praticienId } = req.params;
+        const { visiteurId } = req.params;
+        const { praticienId } = req.body;
 
         try {
             const visiteur = await this.visiteurService.addPraticienToVisiteur(visiteurId, praticienId);
@@ -104,6 +105,28 @@ export class VisiteurController {
             res.status(400).json({
                 success: false,
                 message: error.message || "Erreur lors de l'ajout du praticien"
+            });
+        }
+    };
+
+    /**
+     * GET /api/visiteurs/:visiteurId/praticiens - Récupérer les praticiens du portefeuille
+     */
+    public getPraticiensPortefeuille = async (req: Request, res: Response): Promise<void> => {
+        const { visiteurId } = req.params;
+
+        try {
+            const praticiens = await this.visiteurService.getPraticiensPortefeuille(visiteurId);
+
+            res.status(200).json({
+                success: true,
+                count: praticiens.length,
+                data: praticiens
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                success: false,
+                message: error.message || 'Erreur lors de la récupération du portefeuille'
             });
         }
     };
