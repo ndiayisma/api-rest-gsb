@@ -87,6 +87,9 @@ class App {
     // Routes motifs
     const motifRoutes = new MotifRoutes();
     this.app.use('/api/motifs', motifRoutes.router);
+    /* Routes portefeuilles
+    const portefeuilleRoutes = new PortefeuilleRoutes();
+    this.app.use('/api/portefeuilles', portefeuilleRoutes.router);*/
   }
 
 

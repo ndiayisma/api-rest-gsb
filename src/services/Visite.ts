@@ -1,53 +1,62 @@
-import { VisiteModel, IVisiteDocument } from "../models/Visite";
-import { ICreateVisite } from "../models/interfaces/IVisite";
-import { Types } from "mongoose";
-import { VisiteurModel, IVisiteurDocument } from "../models/Visiteur";
 
-/**
- * Service pour gérer les visites
+import { VisiteModel, IVisiteDocument } from '../models/Visite';
+import { ICreateVisiteur } from '../models/interfaces/IVisiteur';
+/**VisiteModel
+ * Service pour gérer la logique métier des visites
  */
 export class VisiteService {
   /**
-   * Crée une nouvelle visite
-   * @param visiteData Données de la visite à créer
-   * @returns La visite créée
+   * Créer une nouvelle visite
    */
-public async createVisite(visiteData: ICreateVisite): Promise<IVisiteDocument> {
+  public async createVisite(visiteData: ICreateVisiteur): Promise<IVisiteDocument> {
     try {
-      const visite = new VisiteModel({
-        dateVisite: visiteData.dateVisite,
-        commentaires: visiteData.commentaires,
-        visiteur: new Types.ObjectId(visiteData.visiteur)
-      });
-      return await visite.save();
-    } catch (error) {
-      throw new Error(`Erreur lors de la création de la visite : ${error}`);
+      
+      // Créer et sauvegarder la visite
+      const visite = new VisiteModel(visiteData);
+      await visite.save();
+      return visite;
+    } catch (error: any) {
+      // Gestion des erreurs de validation Mongoose
+      if (error.name === 'ValidationError') {
+        const messages = Object.values(error.errors).map((err: any) => err.message);
+        throw new Error(`Validation échouée: ${messages.join(', ')}`);
+      }
+      throw error;
     }
   }
 
+
   /**
-   * Récupère tous les visiteurs
-   * @returns Liste des visiteurs
+   * Récupérer toutes les visites
    */
   public async getAllVisites(): Promise<IVisiteDocument[]> {
     try {
-      return await VisiteModel.find();
+      const visites = await VisiteModel.find().populate('visiteurId')
+        .sort({ dateVisite: -1 })
+        .exec();
+      return visites;
     } catch (error) {
-      throw new Error(`Erreur lors de la récupération des visiteurs : ${error}`);
+      throw new Error('Erreur lors de la récupération des visites');
     }
   }
 
+
   /**
-   * Récupère un visiteur par son ID
-   * @param id ID du visiteur
-   * @returns Le visiteur trouvé ou null
+   * Récupérer une visite par son ID
    */
   public async getVisiteById(id: string): Promise<IVisiteDocument | null> {
     try {
-      return await VisiteModel.findById(id);
-    } catch (error) {
-      throw new Error(`Erreur lors de la récupération de la visite : ${error}`);
+      const visite = await VisiteModel.findById(id).exec();
+
+      if (!visite) {
+        throw new Error(`Visite avec l'ID ${id} introuvable`);
+      }
+      return visite;
+    } catch (error: any) {
+      if (error.name === 'CastError') {
+        throw new Error(`ID invalide: ${id}`);
+      }
+      throw error;
     }
   }
 }
-

@@ -1,20 +1,27 @@
-import { IVisiteur } from './IVisiteur';
-import { IPraticien } from './IPraticien';
+import { Types } from "mongoose";
+
 /**
- * Interface représentant un visiteur
+ * Interface représentant une visite
  */
-export interface IVisite {
-  id: string;
-  dateVisite: Date;
-  commentaires?: string;
-  visiteur : IVisiteur;
-  praticien : IPraticien;
+export interface IVisite{
+    _id?: string;
+    dateVisite: Date;
+    motif: string;
+    praticienId: Types.ObjectId;
+    visiteurId: Types.ObjectId;
+    bilan?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 
+/**
+ * Interface pour la création d'un visite
+ */
 export interface ICreateVisite{
     dateVisite: Date;
-    commentaires?: string;
-    visiteur? : string;
-    praticien? : string;
+    motif: string;
+    praticienId: Types.ObjectId;
+    visiteurId: Types.ObjectId;
+    bilan?: string;
 }

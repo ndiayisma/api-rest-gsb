@@ -36,6 +36,7 @@ export class VisiteurService {
   public async getAllVisiteurs(): Promise<IVisiteurDocument[]> {
     try {
       const Visiteurs = await VisiteurModel.find()
+        .select('nom prenom')
         .sort({ dateCreation: -1 })
         .exec();
       return Visiteurs;
@@ -50,7 +51,9 @@ export class VisiteurService {
    */
   public async getVisiteurById(id: string): Promise<IVisiteurDocument | null> {
     try {
-      const Visiteur = await VisiteurModel.findById(id).exec();
+      const Visiteur = await VisiteurModel.findById(id)
+      .select('nom prenom')
+      .exec();
      
       if (!Visiteur) {
         throw new Error(`Utilisateur avec l'ID ${id} introuvable`);

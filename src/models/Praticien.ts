@@ -1,6 +1,7 @@
 import mongoose, { Schema, Model, Document } from 'mongoose';
 import { IPraticien } from './interfaces/IPraticien';
 
+
 export type IPraticienDocument = IPraticien & Document;
 /**
  * Schéma Mongoose pour Praticien
@@ -21,10 +22,6 @@ const praticienSchema = new Schema<IPraticienDocument>(
       minlength: [2, 'Le prénom doit contenir au moins 2 caractères'],
       maxlength: [50, 'Le prénom ne peut pas dépasser 50 caractères']
     },
-    tel: {
-      type: String,
-      required: [false, 'Le numéro est facultative']
-    },
     email: {
       type: String,
       required: [true, "L'email est obligatoire"],
@@ -33,33 +30,36 @@ const praticienSchema = new Schema<IPraticienDocument>(
       trim: true,
       match: [/^\S+@\S+\.\S+$/, 'Email invalide']
     },
+    tel: {
+      type: String,
+      required: [true, 'Le numéro de téléphone est obligatoire'],
+      trim: true,
+      match: [/^(?:(?:\+|00)33|0)[1-9](?:[0-9]{8})$/, 'Numéro de téléphone français invalide (ex: 0612345678 ou +33612345678)']
+    },
     rue: {
       type: String,
-      required: [true, 'La rue est obligatoire'],
-      trim: true
-    },
-    codePostal: {
-      type: String,
-      required: [true, 'Le code postal est obligatoire'],
-      trim: true
+      trim: true,
+      minlength: [2, 'La rue doit contenir au moins 2 caractères'],
+      maxlength: [100, 'La rue ne peut pas dépasser 100 caractères']
     },
     ville: {
       type: String,
-      required: [true, 'La ville est obligatoire'],
-      trim: true
+      trim: true,
+      minlength: [2, 'La ville doit contenir au moins 2 caractères'],
+      maxlength: [100, 'La ville ne peut pas dépasser 100 caractères']
     },
-    visites: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Visite'
-      }
-    ]
+    codePostal: {
+      type: String,
+      trim: true
+    }
   },
   {
+    timestamps: true,
     versionKey: false
   }
 );
 
-export const PraticienModel: Model<IPraticienDocument> = mongoose.model<IPraticienDocument>('Praticien', praticienSchema);
+// Index sur email pour optimiser les recherches
+praticienSchema.index({ email: 1 });
 
-export default PraticienModel;
+export const PraticienModel: Model<IPraticienDocument> = mongoose.model<IPraticienDocument>('Praticien', praticienSchema);

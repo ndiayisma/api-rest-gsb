@@ -1,68 +1,66 @@
-import { PraticienModel } from '../models/Praticien';
-import { IPraticienDocument } from '../models/Praticien';
+import { PraticienModel, IPraticienDocument } from '../models/Praticien';
 import { ICreatePraticien } from '../models/interfaces/IPraticien';
-import { Types } from 'mongoose';
-
-/**
- * Service pour gérer les praticiens
+/**PraticienModel
+ * Service pour gérer la logique métier des praticiens
  */
 export class PraticienService {
   /**
-   * Crée un nouveau praticien
-   * @param praticienData Données du praticien à créer
-   * @returns Le praticien créé
+   * Créer un nouveau praticien
    */
   public async createPraticien(praticienData: ICreatePraticien): Promise<IPraticienDocument> {
     try {
-      const praticien = new PraticienModel({
-        nom: praticienData.nom,
-        prenom: praticienData.prenom,
-        tel: praticienData.tel,
-        email: praticienData.email,
-        rue: praticienData.rue,
-        codePostal: praticienData.codePostal,
-        ville: praticienData.ville
-      });
-      return await praticien.save();
-    } catch (error) {
-      throw new Error(`Erreur lors de la création du praticien : ${error}`);
+      // Vérifier si l'email existe déjà
+      const existingPraticien = await PraticienModel.findOne({ email: praticienData.email });
+     
+      if (existingPraticien) {
+        throw new Error(`Un praticien avec l'email ${praticienData.email} existe déjà`);
+      }
+      // Créer et sauvegarder le praticien
+      const praticien = new PraticienModel(praticienData);
+      await praticien.save();
+      return praticien;
+    } catch (error: any) {
+      // Gestion des erreurs de validation Mongoose
+      if (error.name === 'ValidationError') {
+        const messages = Object.values(error.errors).map((err: any) => err.message);
+        throw new Error(`Validation échouée: ${messages.join(', ')}`);
+      }
+      throw error;
     }
   }
 
+
   /**
-   * Récupère tous les praticiens
-   * @returns Liste des praticiens
+   * Récupérer tous les praticiens
    */
   public async getAllPraticiens(): Promise<IPraticienDocument[]> {
     try {
-      return await PraticienModel.find();
+      const praticiens = await PraticienModel.find()
+        .sort({ dateCreation: -1 })
+        .exec();
+      return praticiens;
     } catch (error) {
-      throw new Error(`Erreur lors de la récupération des praticiens : ${error}`);
+      throw new Error('Erreur lors de la récupération des praticiens');
     }
   }
-    /**
-     * Récupère un praticien par son ID
-     * @param id ID du praticien
-     * @returns Le praticien trouvé ou null
-     */
-    public async getPraticienById(id: string): Promise<IPraticienDocument | null> {
-      try {
-        return await PraticienModel.findById(id);
-      } catch (error) {
-        throw new Error(`Erreur lors de la récupération du praticien : ${error}`);
-      }
-    }
 
-    /**
-     * Supprime un praticien par son ID
-     * @param id ID du praticien à supprimer
-     * @returns Le praticien supprimé ou null
-     */
-    public async deletePraticienById(id: string): Promise<IPraticienDocument | null> {
-      try {
-        return await PraticienModel.findByIdAndDelete(id);
-      } catch (error) {
-        throw new Error(`Erreur lors de la suppression du praticien : ${error}`);
+
+  /**
+   * Récupérer un praticien par son ID
+   */
+  public async getPraticienById(id: string): Promise<IPraticienDocument | null> {
+    try {
+      const praticien = await PraticienModel.findById(id).exec();
+     
+      if (!praticien) {
+        throw new Error(`Praticien avec l'ID ${id} introuvable`);
       }
+      return praticien;
+    } catch (error: any) {
+      if (error.name === 'CastError') {
+        throw new Error(`ID invalide: ${id}`);
+      }
+      throw error;
     }
+  }
 }

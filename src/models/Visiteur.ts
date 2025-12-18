@@ -1,6 +1,7 @@
 import mongoose, { Schema, Model, Document } from 'mongoose';
 import { IVisiteur } from './interfaces/IVisiteur';
 
+
 export type IVisiteurDocument = IVisiteur & Document;
 /**
  * Schéma Mongoose pour Visiteur
@@ -31,18 +32,36 @@ const visiteurSchema = new Schema<IVisiteurDocument>(
     },
     tel: {
       type: String,
-      required: [false, 'Le numéro est facultative']
+      required: [true, 'Le numéro de téléphone est obligatoire'],
+      trim: true,
+      match: [/^(?:(?:\+|00)33|0)[1-9](?:[0-9]{8})$/, 'Numéro de téléphone français invalide (ex: 0612345678 ou +33612345678)']
     },
-     dateEmbauche: {
+    dateEmbauche: {
       type: Date,
       default: Date.now
-    }
+    },
+  
   },
   {
-    versionKey: false
+    timestamps: true,
+    versionKey: false,
+    toJSON: { virtuals: true },   
+    toObject: { virtuals: true },
+    id: false 
   }
 );
 
-export const VisiteurModel: Model<IVisiteurDocument> = mongoose.model<IVisiteurDocument>('Visiteur', visiteurSchema);
+visiteurSchema.virtual('visites', {
+  ref: 'Visite',           
+  localField: '_id',      
+  foreignField: 'visiteurId', 
+});
 
-export default VisiteurModel;
+visiteurSchema.virtual('portefeuille', {
+  ref: 'Portefeuille',           
+  localField: '_id',      
+  foreignField: 'visiteurId', 
+});
+
+
+export const VisiteurModel: Model<IVisiteurDocument> = mongoose.model<IVisiteurDocument>('Visiteur', visiteurSchema);
