@@ -17,12 +17,12 @@ const portefeuilleSchema = new Schema<IPortefeuilleDocument>(
         type: Date,
         required: false
     },
-    praticienId: {
+    praticien: {
         type: Schema.Types.ObjectId,
         ref: 'Praticien',
         required: [true, 'L\'ID du praticien est obligatoire']
     },
-    visiteurId: {
+    visiteur: {
         type: Schema.Types.ObjectId,
         ref: 'Visiteur',
         required: [true, 'L\'ID du visiteur est obligatoire']

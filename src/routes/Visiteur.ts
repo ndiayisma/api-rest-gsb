@@ -35,6 +35,8 @@ export class VisiteurRoutes {
     this.router.get('/:visiteurId/portefeuille', this.portefeuilleController.getPortefeuille);
     // DELETE /api/visiteurs/:id/portefeuille/:praticienId - Retirer un praticien
     this.router.delete('/:visiteurId/portefeuille/:praticienId', this.portefeuilleController.retirerPraticien);
+    //PATCH /api/visiteurs/:id/portefeuille - Arrêter de suivre un praticien (marquer comme inactif)
+    this.router.patch('/:visiteurId/portefeuille', this.portefeuilleController.arreterSuiviPraticien);
   }
 }
 

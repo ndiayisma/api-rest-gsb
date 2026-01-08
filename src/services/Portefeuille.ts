@@ -11,16 +11,9 @@ export class PortefeuilleService {
    */
   public async ajouterPraticien(data: IAddPraticienToPortefeuille): Promise<IPortefeuilleDocument> {
     try {
-      // Validation des IDs
-      if (!data.visiteurId || !data.praticienId) {
-        throw new Error('visiteurId et praticienId sont requis');
-      }
-      const visiteurIdObj = typeof data.visiteurId === 'string' ? new Types.ObjectId(data.visiteurId) : data.visiteurId;
-      const praticienIdObj = typeof data.praticienId === 'string' ? new Types.ObjectId(data.praticienId) : data.praticienId;
-
       const lienExistant = await PortefeuilleModel.findOne({
-        visiteurId: visiteurIdObj,
-        praticienId: praticienIdObj
+        visiteur: data.visiteur,
+        praticien: data.praticien,
       });
 
       if (lienExistant) {
@@ -28,8 +21,9 @@ export class PortefeuilleService {
       }
 
       const nouveauSuivi= new PortefeuilleModel({
-        visiteurId: visiteurIdObj,
-        praticienId: praticienIdObj,
+        visiteur: data.visiteur,
+        praticien: data.praticien,
+
       });
 
       await nouveauSuivi.save();
@@ -50,8 +44,9 @@ export class PortefeuilleService {
   public async getPortefeuilleByVisiteur(visiteurId: string): Promise<IPortefeuilleDocument[]> {
     try {
       const portefeuille = await PortefeuilleModel.find({ visiteurId })
-        .populate('praticienId') // On récupère les infos complètes du Praticien
+        .populate('praticienId', 'nom prenom') // On récupère les infos complètes du Praticien
         .sort({ createdAt: -1 })  // Trie par ajout le plus récent
+        .select('-__v  -createdAt -updatedAt') // Exclure les champs inutiles
         .exec();
 
       return portefeuille;
@@ -71,6 +66,26 @@ export class PortefeuilleService {
       });
 
       if (!result) {
+        throw new Error('Lien introuvable dans le portefeuille.');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Arrêter de suivre un praticien (marquer comme inactif)
+   */
+  public async arreterSuiviPraticien(visiteurId: string, praticienId: string): Promise<void> {
+    try {
+      const suivi = await PortefeuilleModel.findOneAndUpdate({
+        visiteur : visiteurId,
+        praticien : praticienId,
+      }, {
+        dateFinSuivi: new Date(),
+      });
+
+      if (!suivi) {
         throw new Error('Lien introuvable dans le portefeuille.');
       }
     } catch (error) {
