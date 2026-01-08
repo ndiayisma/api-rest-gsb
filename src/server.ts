@@ -7,6 +7,8 @@ import { VisiteurRoutes } from './routes/Visiteur';
 import { VisiteRoutes } from "./routes/Visite";
 import { PraticienRoutes } from './routes/Praticien';
 import { MotifRoutes } from './routes/Motif';
+import helmet from 'helmet';
+import { generalLimiter } from './middlewares/rateLimiter';
 import mongoose from 'mongoose';
 
 // Chargement des variables d'environnement
@@ -37,6 +39,8 @@ class App {
    * Configure les middlewares Express
    */
   private initializeMiddlewares(): void {
+    this.app.use(helmet());
+    
     // Parse le JSON dans les requêtes
     this.app.use(express.json());
    
@@ -45,6 +49,9 @@ class App {
    
     // Active CORS pour toutes les origines
     this.app.use(cors());
+    
+    // Rate limiting global
+    //this.app.use('/api/', generalLimiter);
   }
 
 
