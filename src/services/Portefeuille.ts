@@ -1,3 +1,4 @@
+import { VisiteController } from '../controllers/Visite';
 import { PortefeuilleModel, IPortefeuilleDocument } from '../models/Portefeuille';
 import { IAddPraticienToPortefeuille } from '../models/interfaces/IPortefeuille';
 import { Types } from 'mongoose';
@@ -54,6 +55,14 @@ export class PortefeuilleService {
       throw new Error('Erreur lors de la récupération du portefeuille.');
     }
   }
+
+  /**
+   * Récupère le nombre de portefeuille
+   */
+  public async getNombrePortefeuille(visiteurId: string): Promise<number> {
+    return PortefeuilleModel.countDocuments({ visiteur: visiteurId });
+  }
+
 
   /**
    * Retire un praticien du portefeuille

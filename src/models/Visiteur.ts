@@ -2,7 +2,11 @@ import mongoose, { Schema, Model, Document } from 'mongoose';
 import { IVisiteur } from './interfaces/IVisiteur';
 
 
-export type IVisiteurDocument = IVisiteur & Document;
+export interface IVisiteurMethods {
+  isJunior(): boolean;
+}
+
+export type IVisiteurDocument = IVisiteur & Document & IVisiteurMethods;
 /**
  * Schéma Mongoose pour Visiteur
  */
@@ -61,6 +65,19 @@ visiteurSchema.virtual('portefeuille', {
   ref: 'Portefeuille',           
   localField: '_id',      
   foreignField: 'visiteurId', 
+});
+
+visiteurSchema.method('isJunior', function isJunior(this: IVisiteurDocument): boolean {
+  const now = new Date();
+  let isJunior = false;
+  if (this.dateEmbauche) {
+    const diffInMs = now.getTime() - this.dateEmbauche.getTime();
+    const diffInYears = diffInMs / (1000 * 60 * 60 * 24 * 365.25);
+    if (diffInYears < 1) {
+      isJunior = true;
+    }
+  }
+  return isJunior;
 });
 
 
