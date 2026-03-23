@@ -1,5 +1,8 @@
 import { VisiteurModel, IVisiteurDocument } from '../models/Visiteur';
 import { ICreateVisiteur } from '../models/interfaces/IVisiteur';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
 /**
  * Service pour gérer la logique métier des utilisateurs
  */
@@ -7,27 +10,72 @@ export class VisiteurService {
   /**
    * Créer un nouvel utilisateur
    */
-  public async createVisiteur(VisiteurData: ICreateVisiteur): Promise<IVisiteurDocument> {
+  public async creerUnCompte(visiteurData: ICreateVisiteur): Promise<IVisiteurDocument> {
+
+
     try {
       // Vérifier si l'email existe déjà
-      const existingVisiteur = await VisiteurModel.findOne({ email: VisiteurData.email });
-     
+      const existingVisiteur = await VisiteurModel.findOne({ email: visiteurData.email });
+
+
       if (existingVisiteur) {
-        throw new Error(`Un utilisateur avec l'email ${VisiteurData.email} existe déjà`);
+        throw new Error(`Un visiteur avec l'email ${visiteurData.email} existe déjà`);
       }
-      // Créer et sauvegarder l'utilisateur
-      const Visiteur = new VisiteurModel(VisiteurData);
-      await Visiteur.save();
-      return Visiteur;
+      // Créer et sauvegarder le visiteur
+      const hashedPassword = await bcrypt.hash(visiteurData.password, 10);
+      const visiteur = new VisiteurModel({
+        email: visiteurData.email,
+        password: hashedPassword,
+        nom: visiteurData.nom,
+        prenom: visiteurData.prenom,
+        tel: visiteurData.tel
+      });
+      await visiteur.save();
+      return visiteur
     } catch (error: any) {
       // Gestion des erreurs de validation Mongoose
       if (error.name === 'ValidationError') {
         const messages = Object.values(error.errors).map((err: any) => err.message);
-        throw new Error(`Validation échouée: ${messages.join(', ')}`);
+        const errorMessage = `Validation échouée: ${messages.join(', ')}`;
+        console.error('[ValidationError]', errorMessage);
+        throw new Error(errorMessage);
+      }
+      console.error('[Error]', error);
+      throw error;
+    }
+  }
+
+
+  public async seConnecter(email: string, password: string): Promise<{ token: string; visiteur: IVisiteurDocument }> {
+    try {
+      const visiteur = await VisiteurModel.findOne({ email });
+
+
+      if (!visiteur) {
+        throw new Error('Email ou mot de passe incorrect');
+      }
+      const isPasswordValid = await bcrypt.compare(password, visiteur.password);
+      if (!isPasswordValid) {
+        throw new Error('Email ou mot de passe incorrect');
+      }
+      const token = jwt.sign(
+        { userId: visiteur._id, role: 'visiteur' },
+        process.env.JWT_SECRET as string,
+        { expiresIn: '1h', algorithm: 'HS256' }
+      );
+      return { token, visiteur };
+
+
+
+
+    } catch (error: any) {
+      if (error.name === 'CastError') {
+        throw new Error(`Error lors de la connexion: ${error.message}`);
       }
       throw error;
     }
   }
+
 
 
   /**

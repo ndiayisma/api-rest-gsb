@@ -12,6 +12,8 @@ export interface IVisiteur{
   prenom: string;
   email: string;
   tel: string;
+  password: string;
+  role?: string;
   dateEmbauche?: Date;
   createdAt?: Date;
   updatedAt?: Date;
@@ -30,5 +32,7 @@ export interface ICreateVisiteur {
   prenom: string;
   email: string;
   tel: string;
+  password: string;
+  role?: string;
   dateEmbauche?: Date;
 }

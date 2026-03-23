@@ -1,4 +1,4 @@
- import { User } from './user';
+import mongoose, { Schema, Model, Document } from 'mongoose';
 import { IVisiteur } from './interfaces/IVisiteur';
 
 
@@ -32,6 +32,16 @@ const visiteurSchema = new Schema<IVisiteurDocument>(
       trim: true,
       match: [/^(?:(?:\+|00)33|0)[1-9](?:[0-9]{8})$/, 'Numéro de téléphone français invalide (ex: 0612345678 ou +33612345678)']
     },
+    email: {
+      type: String,
+      required: [true, "L'email est obligatoire"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [/^\S+@\S+\.\S+$/, 'Email invalide']
+    },
+    password: { type: String, required: true },
+    role:     { type: String, required: false, enum: ['visiteur'] },
     dateEmbauche: {
       type: Date,
       default: Date.now
@@ -73,4 +83,4 @@ visiteurSchema.method('isJunior', function isJunior(this: IVisiteurDocument): bo
 });
 
 
- export const VisiteurModel = User.discriminator<IVisiteurDocument>('visiteur', visiteurSchema);
+export const VisiteurModel: Model<IVisiteurDocument> = mongoose.model<IVisiteurDocument>('Visiteur', visiteurSchema);

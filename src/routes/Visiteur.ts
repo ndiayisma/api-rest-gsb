@@ -3,6 +3,7 @@ import { VisiteurController } from '../controllers/Visiteur';
 import { PortefeuilleController } from '../controllers/Portefeuille';
 import { generalLimiter } from '../middlewares/rateLimiter';
 import { validateCreateVisiteur } from '../middlewares/validators/visiteurValidator';
+import { authMiddleware } from '../middlewares/auth';
 
 /**
  * Configuration des routes pour les visiteurs
@@ -23,9 +24,11 @@ export class VisiteurRoutes {
  
     
     // POST /api/visiteurs - Créer un visiteur
-    this.router.post('/', validateCreateVisiteur, this.visiteurController.createVisiteur);
+    this.router.post('/', validateCreateVisiteur, this.visiteurController.creerUnCompte);
+    // POST /api/visiteurs/login - Connexion du visiteur
+    this.router.post('/connexion', this.visiteurController.seConnecter);
         // GET /api/visiteurs - Récupérer tous les visiteurs
-    this.router.get('/', generalLimiter, this.visiteurController.getAllVisiteurs);
+    this.router.get('/', generalLimiter, authMiddleware, this.visiteurController.getAllVisiteurs);
         // GET /api/visiteurs/:id - Récupérer un visiteur par ID
     this.router.get('/:id', generalLimiter, this.visiteurController.getVisiteurById);
 

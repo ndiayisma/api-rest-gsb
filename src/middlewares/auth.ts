@@ -25,7 +25,7 @@ export const authMiddleware = (
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string, { algorithms: ['HS256'] }) as DecodedToken;
 
 
-    req.auth = { userId: decodedToken.userId, role: decodedToken.role }; 
+    req.auth = { userId: decodedToken.userId, role: decodedToken.role };
     next();
   } catch (error) {
     res.status(401).json({ error: 'Unauthorized request' });
