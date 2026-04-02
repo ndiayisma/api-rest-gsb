@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 import { VisiteurService } from '../services/Visiteur';
 import { VisiteurModel } from '../models/Visiteur';
 import { ICreateVisiteur } from '../models/interfaces/IVisiteur';
