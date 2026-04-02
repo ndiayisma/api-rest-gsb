@@ -26,6 +26,12 @@ const visiteurSchema = new Schema<IVisiteurDocument>(
       minlength: [2, 'Le prénom doit contenir au moins 2 caractères'],
       maxlength: [50, 'Le prénom ne peut pas dépasser 50 caractères']
     },
+    tel: {
+      type: String,
+      required: [true, 'Le numéro de téléphone est obligatoire'],
+      trim: true,
+      match: [/^(?:(?:\+|00)33|0)[1-9](?:[0-9]{8})$/, 'Numéro de téléphone français invalide (ex: 0612345678 ou +33612345678)']
+    },
     email: {
       type: String,
       required: [true, "L'email est obligatoire"],
@@ -34,12 +40,8 @@ const visiteurSchema = new Schema<IVisiteurDocument>(
       trim: true,
       match: [/^\S+@\S+\.\S+$/, 'Email invalide']
     },
-    tel: {
-      type: String,
-      required: [true, 'Le numéro de téléphone est obligatoire'],
-      trim: true,
-      match: [/^(?:(?:\+|00)33|0)[1-9](?:[0-9]{8})$/, 'Numéro de téléphone français invalide (ex: 0612345678 ou +33612345678)']
-    },
+    password: { type: String, required: true },
+    role:     { type: String, required: false, enum: ['visiteur'] },
     dateEmbauche: {
       type: Date,
       default: Date.now
