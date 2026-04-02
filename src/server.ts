@@ -8,8 +8,8 @@ import { VisiteRoutes } from "./routes/Visite";
 import { PraticienRoutes } from './routes/Praticien';
 import { MotifRoutes } from './routes/Motif';
 import helmet from 'helmet';
-import { generalLimiter } from './middlewares/rateLimiter';
-import mongoose from 'mongoose';
+//import { generalLimiter } from './middlewares/rateLimiter';
+//import mongoose from 'mongoose';
 
 // Chargement des variables d'environnement
 dotenv.config();
@@ -60,7 +60,7 @@ class App {
    */
   private initializeRoutes(): void {
     // Route de test
-    this.app.get('/', (req: Request, res: Response) => {
+    this.app.get('/', (_req: Request, res: Response) => {
       res.json({
         message: 'API REST Express.js + TypeScript + MongoDB',
         version: '1.0.0',
@@ -72,7 +72,7 @@ class App {
 
 
     // Route de santé pour vérifier que l'API fonctionne
-    this.app.get('/health', (req: Request, res: Response) => {
+    this.app.get('/health', (_req: Request, res: Response) => {
       res.json({
         status: 'OK',
         timestamp: new Date().toISOString(),

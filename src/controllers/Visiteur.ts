@@ -73,7 +73,7 @@ export class VisiteurController {
   /**
    * GET /api/visiteurs - Récupérer tous les visiteurs
    */
-  public getAllVisiteurs = async (req: Request, res: Response): Promise<void> => {
+  public getAllVisiteurs = async (_req: Request, res: Response): Promise<void> => {
     try {
       const visiteurs = await this.visiteurService.getAllVisiteurs();
      

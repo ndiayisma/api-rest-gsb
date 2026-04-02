@@ -1,7 +1,7 @@
-import { VisiteController } from '../controllers/Visite';
+//import { VisiteController } from '../controllers/Visite';
 import { PortefeuilleModel, IPortefeuilleDocument } from '../models/Portefeuille';
 import { IAddPraticienToPortefeuille } from '../models/interfaces/IPortefeuille';
-import { Types } from 'mongoose';
+//import { Types } from 'mongoose';
 /**
  * Service pour gérer la logique métier du portefeuille
  */
