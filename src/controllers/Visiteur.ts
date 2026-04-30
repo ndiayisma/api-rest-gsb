@@ -60,7 +60,9 @@ export class VisiteurController {
         success: true,
         message: 'Connexion réussie',
         token,
-        data: visiteur
+        email: visiteur.email,
+        nom: visiteur.nom,
+        prenom: visiteur.prenom
       });
     } catch (error: any) {
       res.status(401).json({
