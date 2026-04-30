@@ -1,6 +1,8 @@
 import { VisiteController } from '../controllers/Visite';
 import { PortefeuilleModel, IPortefeuilleDocument } from '../models/Portefeuille';
 import { IAddPraticienToPortefeuille } from '../models/interfaces/IPortefeuille';
+import { PraticienModel } from '../models/Praticien';
+import { VisiteurModel } from '../models/Visiteur';
 import { Types } from 'mongoose';
 /**
  * Service pour gérer la logique métier du portefeuille
@@ -12,6 +14,18 @@ export class PortefeuilleService {
    */
   public async ajouterPraticien(data: IAddPraticienToPortefeuille): Promise<IPortefeuilleDocument> {
     try {
+      // Valider que le praticien existe
+      const praticienExists = await PraticienModel.findById(data.praticien);
+      if (!praticienExists) {
+        throw new Error(`Le praticien avec l'ID ${data.praticien} n'existe pas.`);
+      }
+
+      // Valider que le visiteur existe
+      const visiteurExists = await VisiteurModel.findById(data.visiteur);
+      if (!visiteurExists) {
+        throw new Error(`Le visiteur avec l'ID ${data.visiteur} n'existe pas.`);
+      }
+
       const lienExistant = await PortefeuilleModel.findOne({
         visiteur: data.visiteur,
         praticien: data.praticien,
@@ -29,7 +43,7 @@ export class PortefeuilleService {
 
       await nouveauSuivi.save();
       
-      return await nouveauSuivi.populate('praticienId');
+      return await nouveauSuivi.populate('praticien');
 
     } catch (error: any) {
       if (error.code === 11000) { // Erreur duplicata MongoDB si index unique composite
@@ -44,8 +58,8 @@ export class PortefeuilleService {
    */
   public async getPortefeuilleByVisiteur(visiteurId: string): Promise<IPortefeuilleDocument[]> {
     try {
-      const portefeuille = await PortefeuilleModel.find({ visiteurId })
-        .populate('praticienId', 'nom prenom') // On récupère les infos complètes du Praticien
+      const portefeuille = await PortefeuilleModel.find({ visiteur: visiteurId })
+        .populate('praticien', 'nom prenom') // On récupère les infos complètes du Praticien
         .sort({ createdAt: -1 })  // Trie par ajout le plus récent
         .select('-__v  -createdAt -updatedAt') // Exclure les champs inutiles
         .exec();
@@ -70,8 +84,8 @@ export class PortefeuilleService {
   public async retirerPraticien(visiteurId: string, praticienId: string): Promise<void> {
     try {
       const result = await PortefeuilleModel.findOneAndDelete({
-        visiteurId,
-        praticienId
+        visiteur: visiteurId,
+        praticien: praticienId
       });
 
       if (!result) {
