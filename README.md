@@ -2,7 +2,7 @@
 
 ## 💊Contexte
 
-Dans le cadre d'un projet de développement débutant de septembre 2024 à Avril 2025, le but est de réaliser un application mobile avec Android Studio qui permettra aux visiteurs de consulter et voir en détails les visites des praticiens disponibles
+Dans le cadre d'un projet de développement débutant de Novembre 2025 à Avril 2026, le but est de réaliser un application mobile avec Android Studio qui permettra aux visiteurs de consulter et voir en détails les visites des praticiens disponibles
 Mais Avec L'API d'Express.JS, ces tâches seront facilités la gestion et rapport des visites des praticiens et visiteurs
 
 ## 🪛Configuration Système recommandé
@@ -70,9 +70,16 @@ JWT_SECRET="jeton_secret"
 ## Exemple avec Postman
 
 Ici, on crée une variable qui permet de se logger et récupérer le token de l'utilisateur
-![image](https://github.com/user-attachments/assets/12d061b3-2534-485a-9c3a-363809663e1f)
+![image](https://github.com/user-attachments/assets/00d09844-02f0-447a-b382-42cb757dc95a)
+![image](https://github.com/user-attachments/assets/b2fb32c4-7b31-4189-84a0-50acf7ff2a85)
+
+Une fois la requête HTTP effectué, le résultat en JSON s'affiche sur l'API
+<img width="1248" height="275" alt="image" src="https://github.com/user-attachments/assets/c6f30e77-3921-4a8b-83ed-efe2c97d7f62" />
+
+
+
 
 Sur la requête GetVisites, nous allons utiliser l'autorisation BearerToken afin d'implémenter le token récupéré lors du login
 ![image](https://github.com/user-attachments/assets/24fa742e-d01c-4efd-9b8e-5c8fc6cd3df4)
 
-A noter que la variable {{API_URL}} est le lien de votre codespace en Sortie
+A noter que la variable {{URL}} est le lien de votre codespace en Sortie
