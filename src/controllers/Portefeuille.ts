@@ -48,7 +48,29 @@ export class PortefeuilleController {
       const { praticienId } = req.body;
 
       await this.portefeuilleService.arreterSuiviPraticien(visiteurId, praticienId);
-      res.status(200).json({ message: 'Suivi du praticien arrêté avec succès.' });
+      res.status(200).json({ success: true, message: 'Suivi arrêté avec succès' });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+
+  // GET /visiteurs/:visiteurId/portefeuille?specialite=specialiteId
+  public getPortefeuilleBySpecialite = async (req: Request, res: Response) => {
+    try {
+      const { visiteurId } = req.params;
+      const { specialite } = req.query;
+
+      if (!specialite || typeof specialite !== 'string') {
+        res.status(400).json({ message: 'L\'ID de la spécialité est obligatoire' });
+        return;
+      }
+
+      const portefeuille = await this.portefeuilleService.getPortefeuilleByVisiteurAndSpecialite(visiteurId, specialite);
+      res.status(200).json({
+        success: true,
+        count: portefeuille.length,
+        data: portefeuille
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

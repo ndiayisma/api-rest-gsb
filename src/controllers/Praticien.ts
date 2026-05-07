@@ -65,4 +65,64 @@ export class PraticienController {
       });
     }
   };
+
+  /**
+   * POST /api/praticiens/:id/specialites - Ajouter une spécialité à un praticien
+   */
+  public addSpecialiteToPraticien = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const specialite = req.body?.specialite;
+      
+      if (!specialite) {
+        res.status(400).json({
+          success: false,
+          message: 'L\'ID de la spécialité est obligatoire'
+        });
+        return;
+      }
+
+      const praticien = await this.praticienService.addSpecialiteToPraticien(req.params.id, specialite);
+     
+      res.status(200).json({
+        success: true,
+        message: 'Spécialité ajoutée avec succès',
+        data: praticien
+      });
+    } catch (error: any) {
+      res.status(404).json({
+        success: false,
+        message: error.message || 'Erreur lors de l\'ajout de la spécialité'
+      });
+    }
+  };
+
+  /**
+   * POST /api/praticiens/:id/specialites/remove - Retirer une spécialité d'un praticien
+   */
+  public removeSpecialiteFromPraticien = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const specialite = req.body?.specialite;
+      
+      if (!specialite) {
+        res.status(400).json({
+          success: false,
+          message: 'L\'ID de la spécialité est obligatoire'
+        });
+        return;
+      }
+
+      const praticien = await this.praticienService.removeSpecialiteFromPraticien(req.params.id, specialite);
+     
+      res.status(200).json({
+        success: true,
+        message: 'Spécialité retirée avec succès',
+        data: praticien
+      });
+    } catch (error: any) {
+      res.status(404).json({
+        success: false,
+        message: error.message || 'Erreur lors du retrait de la spécialité'
+      });
+    }
+  };
 }

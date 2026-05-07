@@ -7,6 +7,7 @@ import { VisiteurRoutes } from './routes/Visiteur';
 import { VisiteRoutes } from "./routes/Visite";
 import { PraticienRoutes } from './routes/Praticien';
 import { MotifRoutes } from './routes/Motif';
+import { SpecialiteRoutes } from './routes/Specialite';
 import helmet from 'helmet';
 import { generalLimiter } from './middlewares/rateLimiter';
 import mongoose from 'mongoose';
@@ -94,6 +95,9 @@ class App {
     // Routes motifs
     const motifRoutes = new MotifRoutes();
     this.app.use('/api/motifs', motifRoutes.router);
+    // Routes specialites
+    const specialiteRoutes = new SpecialiteRoutes();
+    this.app.use('/api/specialites', specialiteRoutes.router);
     /* Routes portefeuilles
     const portefeuilleRoutes = new PortefeuilleRoutes();
     this.app.use('/api/portefeuilles', portefeuilleRoutes.router);*/
