@@ -27,7 +27,20 @@ export const authMiddleware = (
 
     req.auth = { userId: decodedToken.userId, role: decodedToken.role };
     next();
-  } catch (error) {
-    res.status(401).json({ error: 'Unauthorized request' });
+  } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      res.status(401).json({ 
+        success: false,
+        error: 'Token expiré',
+        message: 'Votre session a expiré. Veuillez vous reconnecter.'
+      });
+      return;
+    }
+    
+    res.status(401).json({ 
+      success: false,
+      error: 'Unauthorized request',
+      message: error.message || 'Token invalide'
+    });
   }
 };

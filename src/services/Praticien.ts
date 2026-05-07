@@ -36,6 +36,7 @@ export class PraticienService {
   public async getAllPraticiens(): Promise<IPraticienDocument[]> {
     try {
       const praticiens = await PraticienModel.find()
+        .populate('specialites', 'id libelle')
         .sort({ dateCreation: -1 })
         .exec();
       return praticiens;
@@ -50,7 +51,59 @@ export class PraticienService {
    */
   public async getPraticienById(id: string): Promise<IPraticienDocument | null> {
     try {
-      const praticien = await PraticienModel.findById(id).exec();
+      const praticien = await PraticienModel.findById(id)
+        .populate('specialites', 'id libelle')
+        .exec();
+     
+      if (!praticien) {
+        throw new Error(`Praticien avec l'ID ${id} introuvable`);
+      }
+      return praticien;
+    } catch (error: any) {
+      if (error.name === 'CastError') {
+        throw new Error(`ID invalide: ${id}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Ajouter une spécialité à un praticien
+   */
+  public async addSpecialiteToPraticien(id: string, specialiteId: string): Promise<IPraticienDocument | null> {
+    try {
+      const praticien = await PraticienModel.findByIdAndUpdate(
+        id,
+        { $addToSet: { specialites: specialiteId } },
+        { new: true, runValidators: true }
+      )
+        .populate('specialites', 'id libelle')
+        .exec();
+     
+      if (!praticien) {
+        throw new Error(`Praticien avec l'ID ${id} introuvable`);
+      }
+      return praticien;
+    } catch (error: any) {
+      if (error.name === 'CastError') {
+        throw new Error(`ID invalide: ${id}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Retirer une spécialité d'un praticien
+   */
+  public async removeSpecialiteFromPraticien(id: string, specialiteId: string): Promise<IPraticienDocument | null> {
+    try {
+      const praticien = await PraticienModel.findByIdAndUpdate(
+        id,
+        { $pull: { specialites: specialiteId } },
+        { new: true, runValidators: true }
+      )
+        .populate('specialites', 'id libelle')
+        .exec();
      
       if (!praticien) {
         throw new Error(`Praticien avec l'ID ${id} introuvable`);

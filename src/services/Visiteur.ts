@@ -63,7 +63,7 @@ export class VisiteurService {
       const token = jwt.sign(
         { userId: visiteur._id, role: 'visiteur' },
         process.env.JWT_SECRET as string,
-        { expiresIn: '1h', algorithm: 'HS256' }
+        { expiresIn: '30m', algorithm: 'HS256' }
       );
       return { token, visiteur };
 

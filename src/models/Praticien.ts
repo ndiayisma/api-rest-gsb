@@ -51,7 +51,13 @@ const praticienSchema = new Schema<IPraticienDocument>(
     codePostal: {
       type: String,
       trim: true
-    }
+    },
+    specialites: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Specialite'
+      }
+    ]
   },
   {
     timestamps: true,

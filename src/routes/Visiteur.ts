@@ -35,13 +35,15 @@ export class VisiteurRoutes {
 
 
     // --- Gestion du Portefeuille ---
-    // POST /api/visiteurs/:id/portefeuille - Ajouter un praticien au portefeuille
+    // POST /api/visiteurs/:visiteurId/portefeuille - Ajouter un praticien au portefeuille
        this.router.post('/:visiteurId/portefeuille', authMiddleware, portefeuilleAuthMiddleware, this.portefeuilleController.ajouterPraticien);
-    // GET /api/visiteurs/:id/portefeuille - Voir le portefeuille d'un visiteur
+    // GET /api/visiteurs/:visiteurId/portefeuille - Voir le portefeuille d'un visiteur
     this.router.get('/:visiteurId/portefeuille', authMiddleware, portefeuilleAuthMiddleware, this.portefeuilleController.getPortefeuille);
-    // DELETE /api/visiteurs/:id/portefeuille/:praticienId - Retirer un praticien
+    // GET /api/visiteurs/:visiteurId/portefeuille?specialite=specialiteId - Filtrer le portefeuille par spécialité
+    this.router.get('/:visiteurId/portefeuille/filter/specialite', authMiddleware, portefeuilleAuthMiddleware, this.portefeuilleController.getPortefeuilleBySpecialite);
+    // DELETE /api/visiteurs/:visiteurId/portefeuille/:praticienId - Retirer un praticien
     this.router.delete('/:visiteurId/portefeuille/:praticienId', authMiddleware, portefeuilleAuthMiddleware, this.portefeuilleController.retirerPraticien);
-    //PATCH /api/visiteurs/:id/portefeuille - Arrêter de suivre un praticien (marquer comme inactif)
+    //PATCH /api/visiteurs/:visiteurId/portefeuille - Arrêter de suivre un praticien (marquer comme inactif)
     this.router.patch('/:visiteurId/portefeuille', authMiddleware, portefeuilleAuthMiddleware, this.portefeuilleController.arreterSuiviPraticien);
   }
 }

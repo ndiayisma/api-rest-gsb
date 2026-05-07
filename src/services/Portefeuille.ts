@@ -59,7 +59,14 @@ export class PortefeuilleService {
   public async getPortefeuilleByVisiteur(visiteurId: string): Promise<IPortefeuilleDocument[]> {
     try {
       const portefeuille = await PortefeuilleModel.find({ visiteur: visiteurId })
-        .populate('praticien', 'nom prenom') // On récupère les infos complètes du Praticien
+        .populate({
+          path: 'praticien',
+          select: 'nom prenom specialites',
+          populate: {
+            path: 'specialites',
+            select: 'id libelle'
+          }
+        })
         .sort({ createdAt: -1 })  // Trie par ajout le plus récent
         .select('-__v  -createdAt -updatedAt') // Exclure les champs inutiles
         .exec();
@@ -113,6 +120,38 @@ export class PortefeuilleService {
       }
     } catch (error) {
       throw error;
+    }
+  }
+
+  /**
+   * Récupère le portefeuille d'un visiteur filtré par spécialité
+   */
+  public async getPortefeuilleByVisiteurAndSpecialite(visiteurId: string, specialiteId: string): Promise<IPortefeuilleDocument[]> {
+    try {
+      const portefeuille = await PortefeuilleModel.find({ visiteur: visiteurId })
+        .populate({
+          path: 'praticien',
+          select: 'nom prenom specialites',
+          populate: {
+            path: 'specialites',
+            select: 'id libelle'
+          }
+        })
+        .sort({ createdAt: -1 })
+        .select('-__v  -createdAt -updatedAt')
+        .exec();
+
+      // Filtrer pour garder seulement les praticiens qui ont la spécialité demandée
+      const filtered = portefeuille.filter((item: any) => {
+        if (item.praticien && item.praticien.specialites) {
+          return item.praticien.specialites.some((spec: any) => spec._id.toString() === specialiteId || spec.id === specialiteId);
+        }
+        return false;
+      });
+
+      return filtered;
+    } catch (error) {
+      throw new Error('Erreur lors du filtrage du portefeuille par spécialité.');
     }
   }
 }
