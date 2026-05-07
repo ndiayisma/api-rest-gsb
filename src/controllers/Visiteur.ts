@@ -60,6 +60,7 @@ export class VisiteurController {
         success: true,
         message: 'Connexion réussie',
         token,
+        id: visiteur._id,
         email: visiteur.email,
         nom: visiteur.nom,
         prenom: visiteur.prenom
